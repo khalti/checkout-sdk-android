@@ -46,4 +46,4 @@ Using Khalti Payment Gateway, you do not need to integrate with individual banks
 
 
 ### How to use?
-Go to the [documentation to install khalti-android](https://docs.khalti.com/checkout/android/).
+Go to the [documentation to install checkout-android](https://docs.khalti.com/checkout/android/).
