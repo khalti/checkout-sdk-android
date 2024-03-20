@@ -14,7 +14,7 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
         <activity
-            android:name=".MainActivity"
+            android:name="com.khalti.checkout.demo.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

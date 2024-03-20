@@ -55,6 +55,8 @@ android {
 }
 
 dependencies {
+    implementation "com.google.android.material:material:$material_version"
+
     implementation "androidx.core:core-ktx:$core_ktx_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
     implementation 'androidx.activity:activity-compose:1.8.2'
@@ -63,7 +65,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3:1.2.1'
 
 //    implementation "com.khalti:khalti-android:$khaltiVersionName"
-    implementation project(path: ':khalti-android')
+    implementation project(path: ':check-android')
 
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
