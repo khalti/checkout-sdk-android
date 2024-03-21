@@ -5,5 +5,5 @@
 package com.khalti.checkout.resource
 
 enum class OnMessageEvent {
-    BackPressed, ReturnUrlLoadFailure, NetworkFailure, PaymentLookUpFailure, Unknown
+    KPGDisposed, ReturnUrlLoadFailure, NetworkFailure, PaymentLookUpFailure, Unknown
 }

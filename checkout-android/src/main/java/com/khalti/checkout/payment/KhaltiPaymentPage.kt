@@ -6,7 +6,6 @@ package com.khalti.checkout.payment
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import android.webkit.WebView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -142,8 +139,8 @@ fun onBack() {
     val khalti = Store.instance().get<Khalti>("khalti")
     khalti?.onMessage?.invoke(
         OnMessagePayload(
-            OnMessageEvent.BackPressed,
-            "User pressed back",
+            OnMessageEvent.KPGDisposed,
+            "Khalti payment page disposed",
             needsPaymentConfirmation = true
         ),
         khalti,
