@@ -42,6 +42,7 @@ import com.khalti.checkout.composable.KhaltiWebView
 import com.khalti.checkout.resource.ErrorType
 import com.khalti.checkout.resource.OnMessageEvent
 import com.khalti.checkout.resource.OnMessagePayload
+import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.utils.NetworkUtil
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -53,9 +54,6 @@ fun KhaltiPaymentPage(
     androidWebView: WebView,
 ) {
     val state by viewModel.state.collectAsState()
-    val recomposeState = remember {
-        mutableStateOf(false)
-    }
 
     Scaffold(
         topBar = {
@@ -77,7 +75,7 @@ fun KhaltiPaymentPage(
                     },
                     actions = {
                         IconButton(onClick = {
-                            recomposeState.value = !recomposeState.value
+                            androidWebView.loadUrl(Strings.RELOAD_URL)
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
@@ -133,8 +131,7 @@ fun KhaltiPaymentPage(
         }
     }
 
-    LaunchedEffect(state.hasNetwork && recomposeState.value) {
-        Log.i("LaunchedEffect", "Recompose")
+    LaunchedEffect(state.hasNetwork) {
         NetworkUtil.registerListener(activity) {
             viewModel.toggleNetwork(it)
         }

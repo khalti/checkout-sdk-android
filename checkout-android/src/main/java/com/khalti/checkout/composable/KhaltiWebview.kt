@@ -6,7 +6,6 @@ package com.khalti.checkout.composable
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.khalti.checkout.data.KhaltiPayConfig
+import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.resource.Url
 import com.khalti.checkout.view.EPaymentWebClient
 
@@ -50,7 +50,7 @@ fun KhaltiWebView(
             return@AndroidView androidWebView
         },
         update = {
-            it.loadUrl("javascript:window.location.reload(true)")
+            it.loadUrl(Strings.RELOAD_URL)
         }
     )
 }
