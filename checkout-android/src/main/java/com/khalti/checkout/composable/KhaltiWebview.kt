@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.khalti.checkout.data.KhaltiPayConfig
+import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.resource.Url
 import com.khalti.checkout.view.EPaymentWebClient
 
@@ -22,39 +23,34 @@ fun KhaltiWebView(
     config: KhaltiPayConfig,
     onReturnPageLoaded: () -> Unit,
     onPageLoaded: () -> Unit,
+    androidWebView: WebView,
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            WebView(context).apply {
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.setSupportZoom(true)
-
-                this.webViewClient = EPaymentWebClient(onReturnPageLoaded)
-                this.webChromeClient = object : WebChromeClient() {
-                    override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                        if (newProgress == 100) {
-                            onPageLoaded()
-                        }
+        factory = { _ ->
+            androidWebView.webViewClient = EPaymentWebClient(onReturnPageLoaded)
+            androidWebView.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    if (newProgress == 100) {
+                        onPageLoaded()
                     }
                 }
-                this.clearCache(true)
-
-                val baseUrl = if (config.isProd()) {
-                    Url.BASE_PAYMENT_URL_PROD
-                } else {
-                    Url.BASE_PAYMENT_URL_STAGING
-                }
-
-                val paymentUri =
-                    Uri.parse(baseUrl.value).buildUpon().appendQueryParameter("pidx", config.pidx)
-
-                this.loadUrl(paymentUri.toString())
             }
+            val baseUrl = if (config.isProd()) {
+                Url.BASE_PAYMENT_URL_PROD
+            } else {
+                Url.BASE_PAYMENT_URL_STAGING
+            }
+
+            val paymentUri =
+                Uri.parse(baseUrl.value).buildUpon().appendQueryParameter("pidx", config.pidx)
+
+            androidWebView.loadUrl(paymentUri.toString())
+
+            return@AndroidView androidWebView
         },
         update = {
-            it.loadUrl("javascript:window.location.reload(true)")
+            it.loadUrl(Strings.RELOAD_URL)
         }
     )
 }

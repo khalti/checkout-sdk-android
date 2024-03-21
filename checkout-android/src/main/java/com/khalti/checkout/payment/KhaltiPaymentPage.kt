@@ -6,7 +6,8 @@ package com.khalti.checkout.payment
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.os.Build
+import android.util.Log
+import android.webkit.WebView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,14 +42,18 @@ import com.khalti.checkout.composable.KhaltiWebView
 import com.khalti.checkout.resource.ErrorType
 import com.khalti.checkout.resource.OnMessageEvent
 import com.khalti.checkout.resource.OnMessagePayload
+import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.utils.NetworkUtil
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KhaltiPaymentPage(activity: Activity, viewModel: KhaltiPaymentViewModel) {
+fun KhaltiPaymentPage(
+    activity: Activity,
+    viewModel: KhaltiPaymentViewModel,
+    androidWebView: WebView,
+) {
     val state by viewModel.state.collectAsState()
-    val recomposeState = mutableStateOf(false)
 
     Scaffold(
         topBar = {
@@ -69,7 +75,7 @@ fun KhaltiPaymentPage(activity: Activity, viewModel: KhaltiPaymentViewModel) {
                     },
                     actions = {
                         IconButton(onClick = {
-                            recomposeState.value = !recomposeState.value
+                            androidWebView.loadUrl(Strings.RELOAD_URL)
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.Refresh,
@@ -103,6 +109,7 @@ fun KhaltiPaymentPage(activity: Activity, viewModel: KhaltiPaymentViewModel) {
                             onPageLoaded = {
                                 viewModel.toggleLoading(false)
                             },
+                            androidWebView = androidWebView,
                         )
                         if (state.isLoading) {
                             LinearProgressIndicator(
@@ -122,14 +129,11 @@ fun KhaltiPaymentPage(activity: Activity, viewModel: KhaltiPaymentViewModel) {
                 }
             }
         }
-
     }
 
-    LaunchedEffect(state.hasNetwork && recomposeState.value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            NetworkUtil.registerListener(activity) {
-                viewModel.toggleNetwork(it)
-            }
+    LaunchedEffect(state.hasNetwork) {
+        NetworkUtil.registerListener(activity) {
+            viewModel.toggleNetwork(it)
         }
     }
 }

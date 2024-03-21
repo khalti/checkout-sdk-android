@@ -4,6 +4,8 @@
 
 package com.khalti.checkout.resource
 
-enum class Strings(val value: String) {
-
+class Strings {
+    companion object {
+        const val RELOAD_URL = "javascript:window.location.reload(true)"
+    }
 }

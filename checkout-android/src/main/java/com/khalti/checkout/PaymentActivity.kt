@@ -7,8 +7,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,16 +19,17 @@ import androidx.annotation.RequiresApi
 import com.khalti.checkout.payment.KhaltiPaymentPage
 import com.khalti.checkout.payment.KhaltiPaymentViewModel
 import com.khalti.checkout.payment.onBack
+import com.khalti.checkout.resource.Url
+import com.khalti.checkout.view.EPaymentWebClient
 
 internal class PaymentActivity : ComponentActivity() {
     private var receiver: BroadcastReceiver? = null
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            KhaltiPaymentPage(this, KhaltiPaymentViewModel())
+            KhaltiPaymentPage(this, KhaltiPaymentViewModel(), buildWebView())
         }
         registerBroadcast()
         setupBackPressListener()
@@ -80,6 +84,16 @@ internal class PaymentActivity : ComponentActivity() {
             onBackInvokedDispatcher.registerOnBackInvokedCallback(priority) {
                 onBack()
             }
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun buildWebView(): WebView {
+        return WebView(this).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            settings.setSupportZoom(true)
+            this.clearCache(true)
         }
     }
 }
