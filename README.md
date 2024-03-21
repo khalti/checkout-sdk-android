@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-<a href="https://mvnrepository.com/artifact/com.khalti/checkout-android"><img src="https://img.shields.io/maven-central/v/com.khalti/checkout-android?color=%235C2D91" alt="Maven Central"></a>
+<a href="https://repo1.maven.org/maven2/com/khalti/checkout-android/"><img src="https://img.shields.io/maven-central/v/com.khalti/checkout-android?color=%235C2D91" alt="Maven Central"></a>
 <a href="https://docs.khalti.com/"><img src="https://img.shields.io/badge/Khalti-Docs-blueviolet" alt="Khalti Docs"></a>
 <a href="https://github.com/khalti/checkout-sdk-android/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-BSD--3-informational" alt="BSD-3 License"></a>
 <a href="https://github.com/khalti/checkout-sdk-android/issues"><img src="https://img.shields.io/github/issues/khalti/khalti-sdk-android" alt="GitHub issues"></a>
