@@ -3,40 +3,33 @@
 package com.khalti.checkout
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import com.khalti.checkout.payment.KhaltiPaymentPage
 import com.khalti.checkout.payment.KhaltiPaymentViewModel
 import com.khalti.checkout.payment.onBack
-import com.khalti.checkout.resource.Url
-import com.khalti.checkout.view.EPaymentWebClient
+import com.khalti.checkout.signal.Connection
+import com.khalti.checkout.signal.Signal
+import com.khalti.checkout.signal.SignalKey
 
 internal class PaymentActivity : ComponentActivity() {
-    private var receiver: BroadcastReceiver? = null
-
+    private var connection: Connection<String>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
             KhaltiPaymentPage(this, KhaltiPaymentViewModel(), buildWebView())
         }
-        registerBroadcast()
+        registerSignal()
         setupBackPressListener()
     }
 
     override fun onDestroy() {
-        unregisterBroadcast()
+        unregisterSignal()
         super.onDestroy()
     }
 
@@ -52,30 +45,14 @@ internal class PaymentActivity : ComponentActivity() {
         @Suppress("DEPRECATION") super.onBackPressed()
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
-    private fun registerBroadcast() {
-        receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent != null && intent.action.equals("close_khalti_payment_portal")) {
-                    finish()
-                }
-            }
-        }
-        if (Build.VERSION.SDK_INT >= 26) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                registerReceiver(
-                    receiver, IntentFilter("close_khalti_payment_portal"), RECEIVER_NOT_EXPORTED
-                )
-            } else {
-                registerReceiver(
-                    receiver, IntentFilter("close_khalti_payment_portal"),
-                )
-            }
+    private fun registerSignal() {
+        Signal.instance().connect<String>(SignalKey.ClosePayment) {
+            finish()
         }
     }
 
-    private fun unregisterBroadcast() {
-        unregisterReceiver(receiver)
+    private fun unregisterSignal() {
+        Signal.instance().disconnect(connection)
     }
 
     private fun setupBackPressListener() {

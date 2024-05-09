@@ -24,18 +24,11 @@ fun KhaltiWebView(
     onReturnPageLoaded: () -> Unit,
     onPageLoaded: () -> Unit,
     androidWebView: WebView,
+    returnUrl: String?,
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { _ ->
-            androidWebView.webViewClient = EPaymentWebClient(onReturnPageLoaded)
-            androidWebView.webChromeClient = object : WebChromeClient() {
-                override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    if (newProgress == 100) {
-                        onPageLoaded()
-                    }
-                }
-            }
             val baseUrl = if (config.isProd()) {
                 Url.BASE_PAYMENT_URL_PROD
             } else {
@@ -44,6 +37,16 @@ fun KhaltiWebView(
 
             val paymentUri =
                 Uri.parse(baseUrl.value).buildUpon().appendQueryParameter("pidx", config.pidx)
+
+            androidWebView.webViewClient =
+                EPaymentWebClient(returnUrl, paymentUri.toString(), onReturnPageLoaded)
+            androidWebView.webChromeClient = object : WebChromeClient() {
+                override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                    if (newProgress == 100) {
+                        onPageLoaded()
+                    }
+                }
+            }
 
             androidWebView.loadUrl(paymentUri.toString())
 

@@ -18,7 +18,10 @@ data class PaymentPayload(
     @SerializedName("status") val status: String?,
     @SerializedName("transaction_id") val transactionId: String?,
     @SerializedName("fee") val fee: Long = 0,
-    @SerializedName("refunded") val refunded: Boolean = false
+    @SerializedName("refunded") val refunded: Boolean = false,
+    @SerializedName("purchase_order_id") val purchaseOrderId: String?,
+    @SerializedName("purchase_order_name") val purchaseOrderName: String?,
+    @SerializedName("extra_merchant_params") val extraMerchantParams: Map<String, Any>?,
 ) {
     override fun toString(): String {
         return StringBuilder()
@@ -28,6 +31,9 @@ data class PaymentPayload(
             .append("transactionId: $transactionId\n")
             .append("fee: $fee\n")
             .append("refunded: $refunded\n")
+            .append("purchase_order_id: $purchaseOrderId\n")
+            .append("purchase_order_name: $purchaseOrderName\n")
+            .append("extra_merchant_params: $extraMerchantParams\n")
             .toString()
     }
 }

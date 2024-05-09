@@ -3,7 +3,6 @@
 package com.khalti.checkout.demo.composable
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -36,6 +35,7 @@ import com.khalti.android.demo.R
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -52,8 +52,7 @@ fun DemoScreen() {
         LocalContext.current,
         KhaltiPayConfig(
             publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "F5d8z7bcvhuYmy8Sh26LqS",
-            returnUrl = Uri.parse("https://example.com"),
+            pidx = "EKatER7gGM4ayxk3U2ijmK",
             environment = Environment.TEST
         ),
         onPaymentResult = { paymentResult, khalti ->
@@ -84,9 +83,6 @@ fun DemoScreen() {
     }
     val pidx = remember {
         mutableStateOf(khalti.config.pidx)
-    }
-    val returnUrl = remember {
-        mutableStateOf(khalti.config.returnUrl)
     }
     val environments = enumValues<Environment>()
     val selectedEnvironment = remember {
@@ -119,17 +115,6 @@ fun DemoScreen() {
                         publicKey.value = it
                     },
                     label = { Text(text = "Public Key") },
-                )
-                Spacer(Modifier.height(20.dp))
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    value = returnUrl.value.toString(),
-                    onValueChange = {
-                        returnUrl.value = Uri.parse(it)
-                    },
-                    label = { Text(text = "Return Url") },
                 )
                 Spacer(Modifier.height(20.dp))
                 TextField(
@@ -174,13 +159,11 @@ fun DemoScreen() {
                     OutlinedButton(
                         {
                             if (publicKey.value != khalti.config.publicKey
-                                || returnUrl.value != khalti.config.returnUrl
                                 || pidx.value != khalti.config.pidx
                                 || selectedEnvironment.value != khalti.config.environment
                             ) {
                                 khalti.config = khalti.config.copy(
                                     publicKey = publicKey.value,
-                                    returnUrl = returnUrl.value,
                                     pidx = pidx.value,
                                     environment = selectedEnvironment.value,
                                 )

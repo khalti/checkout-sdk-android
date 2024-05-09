@@ -2,7 +2,7 @@
  * Copyright (c) 2024. The Khalti Authors. All rights reserved.
  */
 
-package com.khalti.checkout.service
+package com.khalti.checkout.service.verification
 
 import com.khalti.checkout.api.ApiClient
 import com.khalti.checkout.api.ApiService
