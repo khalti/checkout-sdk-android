@@ -20,8 +20,8 @@ class ErrorUtil {
             "{\"detail\":\"An error occurred, please try again later\"}"
 
 
-        fun parseError(json: String, statusCode: String? = null): String {
-            var errorJson = ""
+        fun parseError(json: String, statusCode: String? = null): Map<String, String> {
+            var errorJson = json
             if (errorJson.isEmpty()) {
                 errorJson = GENERIC_JSON_ERROR
             }
@@ -76,12 +76,12 @@ class ErrorUtil {
             if (!statusCode.isNullOrEmpty()) {
                 map["status"] = statusCode
             }
-            return JsonUtil.convertToJsonString(map)
+            return map
         }
 
-        fun parseThrowableError(throwable: String?, statusCode: String?): String {
+        fun parseThrowableError(throwable: String?, statusCode: String?): Map<String, String> {
             val t = (throwable ?: "").lowercase(Locale.getDefault())
-            val map = HashMap<String, String?>()
+            val map = HashMap<String, String>()
             var error = GENERIC_ERROR
 
             if (t.contains("timed out")) {
@@ -98,7 +98,7 @@ class ErrorUtil {
 
             map["detail"] = error
 
-            return JsonUtil.convertToJsonString(map)
+            return map
         }
 
     }
