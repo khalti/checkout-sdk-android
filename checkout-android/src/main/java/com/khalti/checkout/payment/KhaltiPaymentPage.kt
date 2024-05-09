@@ -91,8 +91,7 @@ private fun PaymentAppBar(
                     androidWebView.loadUrl(Strings.RELOAD_URL)
                 }) {
                     Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Refresh"
+                        imageVector = Icons.Filled.Refresh, contentDescription = "Refresh"
                     )
                 }
             },
@@ -109,16 +108,14 @@ private fun PaymentBody(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(true) {
-        val khalti = Store.instance().get<Khalti>("khalti")
-        if (khalti != null) {
-            viewModel.fetchDetail(khalti)
-        }
-    }
-
     LaunchedEffect(state.hasNetwork) {
         NetworkUtil.registerListener(activity) {
             viewModel.toggleNetwork(it)
+        }
+
+        val khalti = Store.instance().get<Khalti>("khalti")
+        if (khalti != null && NetworkUtil.isNetworkAvailable(activity)) {
+            viewModel.fetchDetail(khalti)
         }
     }
 
@@ -130,23 +127,28 @@ private fun PaymentBody(
             }
 
             val config = khalti.config
+
             if (state.hasNetwork) {
                 Box(
-                    Modifier
-                        .fillMaxSize()
+                    Modifier.fillMaxSize()
                 ) {
-                    if (state.loadWebView) {
-                        KhaltiWebView(
-                            config = config,
-                            onReturnPageLoaded = {
-                                viewModel.verifyPaymentStatus(khalti)
-                            },
-                            onPageLoaded = {
-                                viewModel.toggleLoading(false)
-                            },
-                            androidWebView = androidWebView,
-                            returnUrl = state.returnUrl
-                        )
+                    if (state.error != null && state.error!!.isNotEmpty()) {
+                        KhaltiError(errorType = ErrorType.generic, message = state.error) {
+                            viewModel.fetchDetail(khalti)
+                        }
+                    } else {
+                        if (state.loadWebView) {
+                            KhaltiWebView(
+                                config = config,
+                                onReturnPageLoaded = {
+                                    viewModel.verifyPaymentStatus(khalti)
+                                },
+                                onPageLoaded = {
+                                    viewModel.toggleLoading(false)
+                                },
+                                androidWebView = androidWebView, returnUrl = state.returnUrl,
+                            )
+                        }
                     }
                     if (state.isLoading) {
                         LinearProgressIndicator(

@@ -48,7 +48,7 @@ fun KhaltiError(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -69,7 +69,7 @@ fun KhaltiError(
             )
         }
         Text(
-            text = resolvedMessage, style = MaterialTheme.typography.bodyLarge
+            text = resolvedMessage, style = MaterialTheme.typography.bodyLarge,
         )
 
         if (onAction != null) {
