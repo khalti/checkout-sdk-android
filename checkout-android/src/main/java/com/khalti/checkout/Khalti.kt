@@ -6,12 +6,14 @@ package com.khalti.checkout
 
 import android.content.Context
 import android.content.Intent
-import com.khalti.checkout.service.VerificationRepository
+import com.khalti.checkout.service.verification.VerificationRepository
 import com.khalti.checkout.data.KhaltiPayConfig
 import com.khalti.checkout.callbacks.OnMessage
 import com.khalti.checkout.callbacks.OnPaymentResult
 import com.khalti.checkout.callbacks.OnReturn
 import com.khalti.checkout.cache.Store
+import com.khalti.checkout.signal.Signal
+import com.khalti.checkout.signal.SignalKey
 import com.khalti.checkout.utils.PackageUtil
 
 // Though kotlin provides named and optional parameters
@@ -81,7 +83,6 @@ class Khalti private constructor(
     }
 
     fun close() {
-        val intent = Intent("close_khalti_payment_portal")
-        context.sendBroadcast(intent)
+        Signal.instance().dispatch(SignalKey.ClosePayment, "Close")
     }
 }
