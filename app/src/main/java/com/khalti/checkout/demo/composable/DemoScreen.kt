@@ -36,11 +36,8 @@ import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 @Preview
@@ -55,7 +52,7 @@ fun DemoScreen() {
         LocalContext.current,
         KhaltiPayConfig(
             publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "LkDXVzku7U8eFgDLdkyp5h",
+            pidx = "EKatER7gGM4ayxk3U2ijmK",
             environment = Environment.TEST
         ),
         onPaymentResult = { paymentResult, khalti ->

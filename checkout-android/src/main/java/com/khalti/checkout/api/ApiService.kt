@@ -11,7 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ApiService {
-    @POST("epayment/lookup/")
+    @POST("epayment/lookup-sdk/")
     suspend fun verify(@Body body: Map<String, String>): Response<PaymentPayload>
 
     @POST("epayment/detail/")
