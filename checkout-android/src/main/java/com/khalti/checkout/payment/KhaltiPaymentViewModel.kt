@@ -10,17 +10,20 @@ import com.khalti.checkout.service.transaction.TransactionRepository
 import com.khalti.checkout.service.verification.VerificationRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 
 data class KhaltiPaymentState(
     val isLoading: Boolean = true,
-    val hasNetwork: Boolean = true,
+    val hasNetwork: Boolean = false,
     val progressDialog: Boolean = false,
-    val returnUrl: String? = null,
     val loadWebView: Boolean = false,
+    val returnUrl: String? = null,
+    val error: String? = null,
 )
 
 class KhaltiPaymentViewModel : ViewModel() {
@@ -45,15 +48,21 @@ class KhaltiPaymentViewModel : ViewModel() {
                     val returnUrl = it.returnUrl
                     if (returnUrl != null) {
                         _state.update { state ->
-                            state.copy(returnUrl = returnUrl)
+                            state.copy(returnUrl = returnUrl, error = "", loadWebView = true)
                         }
                     }
                 },
-                err = {
-                    /*no-op*/
+                err = { failure ->
+                    _state.update {
+                        it.copy(
+                            error = failure.failureMap?.get("detail")
+                                ?: "There was an error setting up your payment. Please try again later.",
+                            loadWebView = false,
+                            isLoading = false
+                        )
+                    }
                 },
             )
-            _state.update { it.copy(loadWebView = true) }
         }
     }
 
