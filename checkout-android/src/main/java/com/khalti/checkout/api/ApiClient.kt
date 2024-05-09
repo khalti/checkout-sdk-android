@@ -82,18 +82,18 @@ suspend fun <T : Any> safeApiCall(
             }
             return@withContext Err(
                 KFailure.Payment(
-                    message = "Error", cause = Throwable(
-                        ErrorUtil.parseError(
-                            if (response.errorBody() != null) String(
-                                response.errorBody()!!.bytes()
-                            ) else "", response.code().toString()
-                        )
-                    ), code = response.code()
+                    message = "Error",
+                    failureMap = ErrorUtil.parseError(
+                        if (response.errorBody() != null) String(
+                            response.errorBody()!!.bytes()
+                        ) else "", response.code().toString()
+                    ),
+                    code = response.code(),
                 )
             )
         } catch (t: Throwable) {
             val processedThrowable = Throwable(
-                ErrorUtil.parseThrowableError(t.message, "600")
+                ErrorUtil.parseThrowableError(t.message, "600")["detail"]
             )
             val failure: KFailure = when (t) {
                 is UnknownHostException -> KFailure.ServerUnreachable(
