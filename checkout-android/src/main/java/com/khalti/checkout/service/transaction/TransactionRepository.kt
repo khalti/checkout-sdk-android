@@ -4,56 +4,16 @@
 
 package com.khalti.checkout.service.transaction
 
-import com.khalti.checkout.Khalti
-import com.khalti.checkout.data.PaymentResult
+import com.khalti.checkout.data.PaymentDetailModel
 import com.khalti.checkout.resource.KFailure
-import com.khalti.checkout.resource.OnMessageEvent
-import com.khalti.checkout.resource.OnMessagePayload
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.khalti.checkout.resource.Result
 
-class VerificationRepository {
-    private val verificationService: VerificationService by lazy {
-        VerificationService()
+class TransactionRepository {
+    private val transactionService: TransactionService by lazy {
+        TransactionService()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun verify(pidx: String, khalti: Khalti, onComplete: (() -> Unit)? = null) {
-        GlobalScope.launch {
-            val result = verificationService.verify(pidx)
-            onComplete?.invoke()
-            result.match(
-                ok = {
-                    khalti.onPaymentResult.invoke(
-                        PaymentResult(
-                            status = it.status ?: "Payment successful", payload = it
-                        ), khalti
-                    )
-                },
-                err = {
-                    val messageEvent = when (it) {
-                        is KFailure.NoNetwork, is KFailure.ServerUnreachable -> OnMessageEvent.NetworkFailure
-                        is KFailure.HttpCall, is KFailure.Payment -> OnMessageEvent.PaymentLookUpFailure
-                        else -> OnMessageEvent.Unknown
-
-                    }
-                    val needsConfirmations = when (it) {
-                        is KFailure.NoNetwork, is KFailure.ServerUnreachable, is KFailure.Generic -> true
-                        else -> false
-                    }
-                    khalti.onMessage.invoke(
-                        OnMessagePayload(
-                            messageEvent,
-                            it.message ?: "",
-                            it.cause,
-                            it.code,
-                            needsPaymentConfirmation = needsConfirmations
-                        ),
-                        khalti,
-                    )
-                },
-            )
-        }
+    suspend fun fetchDetail(pidx: String): Result<PaymentDetailModel, KFailure> {
+        return transactionService.fetchDetail(pidx)
     }
 }
