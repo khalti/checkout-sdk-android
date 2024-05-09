@@ -6,15 +6,22 @@ package com.khalti.checkout.view
 
 import android.net.Uri
 import android.os.Build
-import android.webkit.*
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.cache.Store
 import com.khalti.checkout.resource.OnMessageEvent
 import com.khalti.checkout.resource.OnMessagePayload
 
-internal class EPaymentWebClient(val onReturn: () -> Unit) : WebViewClient() {
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+internal class EPaymentWebClient(
+    private val returnUrl: String?,
+    private val paymentUrl: String,
+    val onReturn: () -> Unit
+) :
+    WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?):
             Boolean = handleUri(request!!.url)
 
@@ -41,13 +48,13 @@ internal class EPaymentWebClient(val onReturn: () -> Unit) : WebViewClient() {
 
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)
+        val resolvedUrl = url ?: ""
+        val resolvedReturnUrl = returnUrl ?: "-"
 
-        val khalti = Store.instance().get<Khalti>("khalti")
-        val returnUrl = khalti?.config?.returnUrl?.toString() ?: ""
-
-        if (url?.startsWith(returnUrl) != false) {
-            khalti?.onReturn?.invoke(khalti)
-            onReturn()
+        if (resolvedReturnUrl == "-" && resolvedUrl != paymentUrl) {
+            invokeOnReturn()
+        } else if (resolvedUrl.startsWith(resolvedReturnUrl)) {
+            invokeOnReturn()
         }
     }
 
@@ -62,7 +69,7 @@ internal class EPaymentWebClient(val onReturn: () -> Unit) : WebViewClient() {
         val khalti = Store.instance().get<Khalti>("khalti")
         if (khalti != null) {
             if (description != null) {
-                if (failingUrl?.startsWith(khalti.config.returnUrl.toString()) != false) {
+                if (failingUrl?.startsWith(returnUrl ?: "") != false) {
                     khalti.onMessage.invoke(
                         OnMessagePayload(
                             OnMessageEvent.ReturnUrlLoadFailure,
@@ -74,5 +81,11 @@ internal class EPaymentWebClient(val onReturn: () -> Unit) : WebViewClient() {
                 }
             }
         }
+    }
+
+    private fun invokeOnReturn() {
+        val khalti = Store.instance().get<Khalti>("khalti")
+        khalti?.onReturn?.invoke(khalti)
+        onReturn()
     }
 }
