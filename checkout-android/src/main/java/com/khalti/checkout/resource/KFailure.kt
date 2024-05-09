@@ -4,18 +4,44 @@
 
 package com.khalti.checkout.resource
 
-abstract class KFailure(failureMessage: String, throwable: Throwable? = null, val code: Number? = null) :
+abstract class KFailure(
+    failureMessage: String,
+    throwable: Throwable? = null,
+    val code: Number? = null,
+    val failureMap: Map<String, String>? = null,
+) :
     Exception(failureMessage, throwable) {
 
-    class NoNetwork(message: String, cause: Throwable? = null) : KFailure(message, cause)
+    class NoNetwork(
+        message: String,
+        cause: Throwable? = null,
+        failureMap: Map<String, String>? = null,
+    ) : KFailure(message, cause, failureMap = failureMap)
 
-    class ServerUnreachable(message: String, cause: Throwable? = null) :
-        KFailure(message, cause)
+    class ServerUnreachable(
+        message: String, cause: Throwable? = null,
+        failureMap: Map<String, String>? = null,
+    ) : KFailure(message, cause, failureMap = failureMap)
 
-    class HttpCall(message: String, cause: Throwable? = null, code: Number?) :
-        KFailure(message, cause, code)
+    class HttpCall(
+        message: String,
+        cause: Throwable? = null,
+        code: Number?,
+        failureMap: Map<String, String>? = null
+    ) :
+        KFailure(message, cause, code, failureMap = failureMap)
 
-    class Payment(message: String, cause: Throwable? = null, code: Number?) : KFailure(message, cause, code)
+    class Payment(
+        message: String,
+        cause: Throwable? = null,
+        code: Number?,
+        failureMap: Map<String, String>? = null
+    ) :
+        KFailure(message, cause, code, failureMap = failureMap)
 
-    class Generic(message: String, cause: Throwable? = null) : KFailure(message, cause)
+    class Generic(
+        message: String,
+        cause: Throwable? = null,
+        failureMap: Map<String, String>? = null,
+    ) : KFailure(message, cause, failureMap = failureMap)
 }
