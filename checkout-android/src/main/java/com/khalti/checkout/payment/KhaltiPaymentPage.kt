@@ -107,15 +107,18 @@ private fun PaymentBody(
     androidWebView: WebView,
 ) {
     val state by viewModel.state.collectAsState()
+    var verificationTriggerByReturnUrl = false
+
+    LaunchedEffect(true) {
+        val khalti = Store.instance().get<Khalti>("khalti")
+        if (khalti != null && NetworkUtil.isNetworkAvailable(activity)) {
+            viewModel.fetchDetail(khalti)
+        }
+    }
 
     LaunchedEffect(state.hasNetwork) {
         NetworkUtil.registerListener(activity) {
             viewModel.toggleNetwork(it)
-        }
-
-        val khalti = Store.instance().get<Khalti>("khalti")
-        if (khalti != null && NetworkUtil.isNetworkAvailable(activity)) {
-            viewModel.fetchDetail(khalti)
         }
     }
 
@@ -141,7 +144,10 @@ private fun PaymentBody(
                             KhaltiWebView(
                                 config = config,
                                 onReturnPageLoaded = {
-                                    viewModel.verifyPaymentStatus(khalti)
+                                    if (!verificationTriggerByReturnUrl) {
+                                        viewModel.verifyPaymentStatus(khalti)
+                                        verificationTriggerByReturnUrl = true
+                                    }
                                 },
                                 onPageLoaded = {
                                     viewModel.toggleLoading(false)
