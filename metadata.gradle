@@ -1,6 +1,6 @@
 ext {
-    khaltiVersionCode = 0005000
-    khaltiVersionName = '0.05.00'
+    khaltiVersionCode = 0006000
+    khaltiVersionName = '0.06.00'
 
     libraryMinSdk = 21
     libraryCompileSdk = 34
