@@ -108,14 +108,16 @@ private fun PaymentBody(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(state.hasNetwork) {
-        NetworkUtil.registerListener(activity) {
-            viewModel.toggleNetwork(it)
-        }
-
+    LaunchedEffect(true) {
         val khalti = Store.instance().get<Khalti>("khalti")
         if (khalti != null && NetworkUtil.isNetworkAvailable(activity)) {
             viewModel.fetchDetail(khalti)
+        }
+    }
+
+    LaunchedEffect(state.hasNetwork) {
+        NetworkUtil.registerListener(activity) {
+            viewModel.toggleNetwork(it)
         }
     }
 
