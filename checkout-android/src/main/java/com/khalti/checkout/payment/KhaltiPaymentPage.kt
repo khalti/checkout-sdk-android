@@ -107,6 +107,7 @@ private fun PaymentBody(
     androidWebView: WebView,
 ) {
     val state by viewModel.state.collectAsState()
+    var verificationTriggerByReturnUrl = false
 
     LaunchedEffect(true) {
         val khalti = Store.instance().get<Khalti>("khalti")
@@ -143,7 +144,10 @@ private fun PaymentBody(
                             KhaltiWebView(
                                 config = config,
                                 onReturnPageLoaded = {
-                                    viewModel.verifyPaymentStatus(khalti)
+                                    if (!verificationTriggerByReturnUrl) {
+                                        viewModel.verifyPaymentStatus(khalti)
+                                        verificationTriggerByReturnUrl = true
+                                    }
                                 },
                                 onPageLoaded = {
                                     viewModel.toggleLoading(false)

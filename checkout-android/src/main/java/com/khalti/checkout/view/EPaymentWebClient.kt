@@ -49,11 +49,10 @@ internal class EPaymentWebClient(
     override fun onPageFinished(view: WebView?, url: String?) {
         super.onPageFinished(view, url)
         val resolvedUrl = url ?: ""
-        val resolvedReturnUrl = returnUrl ?: "-"
 
-        if (resolvedReturnUrl == "-" && resolvedUrl != paymentUrl) {
-            invokeOnReturn()
-        } else if (resolvedUrl.startsWith(resolvedReturnUrl)) {
+        val isPaymentPage = resolvedUrl == paymentUrl
+        val isReturnPage = returnUrl == null || resolvedUrl.startsWith(returnUrl)
+        if (!isPaymentPage && isReturnPage) {
             invokeOnReturn()
         }
     }

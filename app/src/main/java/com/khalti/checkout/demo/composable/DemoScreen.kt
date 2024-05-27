@@ -52,7 +52,7 @@ fun DemoScreen() {
         LocalContext.current,
         KhaltiPayConfig(
             publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "ug6jvpJAvhQc6p6KQk7gRJ",
+            pidx = "L3A7eG4mEZLvRL8oeGwNfL",
             environment = Environment.TEST
         ),
         onPaymentResult = { paymentResult, khalti ->
