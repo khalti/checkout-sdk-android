@@ -69,7 +69,7 @@ internal class PaymentActivity : ComponentActivity() {
         return WebView(this).apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            settings.setSupportZoom(false)
+            settings.setSupportZoom(true)
             settings.textZoom = 100
             this.clearCache(true)
         }
