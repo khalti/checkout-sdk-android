@@ -70,6 +70,7 @@ internal class PaymentActivity : ComponentActivity() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.setSupportZoom(true)
+            settings.textZoom = 100
             this.clearCache(true)
         }
     }
