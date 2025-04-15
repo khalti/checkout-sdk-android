@@ -152,7 +152,8 @@ private fun PaymentBody(
                                 onPageLoaded = {
                                     viewModel.toggleLoading(false)
                                 },
-                                androidWebView = androidWebView, returnUrl = state.returnUrl,
+                                androidWebView = androidWebView,
+                                returnUrl = state.returnUrl,
                             )
                         }
                     }
