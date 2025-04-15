@@ -5,6 +5,7 @@ package com.khalti.checkout
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.view.ViewGroup.LayoutParams
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
@@ -72,6 +73,7 @@ internal class PaymentActivity : ComponentActivity() {
             settings.setSupportZoom(true)
             settings.textZoom = 100
             this.clearCache(true)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         }
     }
 }
