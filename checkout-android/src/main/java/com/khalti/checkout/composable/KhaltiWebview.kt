@@ -5,7 +5,6 @@
 package com.khalti.checkout.composable
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +15,7 @@ import com.khalti.checkout.data.KhaltiPayConfig
 import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.resource.Url
 import com.khalti.checkout.view.EPaymentWebClient
+import androidx.core.net.toUri
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -36,7 +36,7 @@ fun KhaltiWebView(
             }
 
             val paymentUri =
-                Uri.parse(baseUrl.value).buildUpon().appendQueryParameter("pidx", config.pidx)
+                baseUrl.value.toUri().buildUpon().appendQueryParameter("pidx", config.pidx)
 
             androidWebView.webViewClient =
                 EPaymentWebClient(returnUrl, paymentUri.toString(), onReturnPageLoaded)
