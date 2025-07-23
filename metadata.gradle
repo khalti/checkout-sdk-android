@@ -3,6 +3,6 @@ ext {
     khaltiVersionName = '0.07.00'
 
     libraryMinSdk = 21
-    libraryCompileSdk = 34
-    libraryTargetSdk = 34
+    libraryCompileSdk = 35
+    libraryTargetSdk = 35
 }
