@@ -1,7 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
     id 'kotlin-parcelize'
+    alias libs.plugins.compose.compiler
 }
 
 android {
@@ -48,28 +49,24 @@ android {
 
 dependencies {
     // ---------- Api ----------
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation libs.retrofit
+    implementation libs.converter.gson
+    implementation libs.logging.interceptor
 
     // ---------- Compose ----------
-    def composeBom = platform('androidx.compose:compose-bom:2024.02.02')
-    implementation platform('androidx.compose:compose-bom:2024.02.02')
-    androidTestImplementation platform('androidx.compose:compose-bom:2024.02.02')
-
-    implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.activity:activity-compose:1.8.2'
-    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.material.icons.extended
 
     // Compose preview support
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation libs.androidx.ui.tooling.preview
+    debugImplementation libs.androidx.ui.tooling
 
     // ---------- Test ----------
-    testImplementation "junit:junit:$junit_version"
+    testImplementation libs.junit
 
-    androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation libs.junit.ext
+    androidTestImplementation libs.expresso
 }
 
 ext {
