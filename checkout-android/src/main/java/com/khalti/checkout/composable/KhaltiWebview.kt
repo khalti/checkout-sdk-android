@@ -25,6 +25,7 @@ fun KhaltiWebView(
     onPageLoaded: () -> Unit,
     androidWebView: WebView,
     returnUrl: String?,
+    mode: String?,
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -37,6 +38,7 @@ fun KhaltiWebView(
 
             val paymentUri =
                 baseUrl.value.toUri().buildUpon().appendQueryParameter("pidx", config.pidx)
+                    .appendQueryParameter("mode", mode)
 
             androidWebView.webViewClient =
                 EPaymentWebClient(returnUrl, paymentUri.toString(), onReturnPageLoaded)
