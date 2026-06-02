@@ -13,6 +13,7 @@ data class KhaltiPayConfig(
     val pidx: String,
     val openInKhalti: Boolean = true,
     val environment: Environment = Environment.PROD,
+    val paymentUrl: String,
 ) : Parcelable {
 
     fun isProd(): Boolean = environment == Environment.PROD
