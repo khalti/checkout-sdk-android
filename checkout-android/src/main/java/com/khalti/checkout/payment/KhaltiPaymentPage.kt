@@ -10,16 +10,13 @@ import android.webkit.WebView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,10 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.cache.Store
 import com.khalti.checkout.composable.KProgressDialog
@@ -113,13 +110,6 @@ private fun PaymentBody(
     val state by viewModel.state.collectAsState()
     var verificationTriggerByReturnUrl = false
 
-    LaunchedEffect(true) {
-        val khalti = Store.instance().get<Khalti>("khalti")
-        if (khalti != null && NetworkUtil.isNetworkAvailable(activity)) {
-            viewModel.fetchDetail(khalti)
-        }
-    }
-
     LaunchedEffect(state.hasNetwork) {
         NetworkUtil.registerListener(activity) {
             viewModel.toggleNetwork(it)
@@ -139,43 +129,28 @@ private fun PaymentBody(
                 Box(
                     Modifier.fillMaxSize()
                 ) {
-                    if (state.error != null && state.error!!.isNotEmpty()) {
-                        KhaltiError(errorType = ErrorType.generic, message = state.error) {
-                            viewModel.fetchDetail(khalti)
-                        }
-                    } else {
-                        if (state.loadWebView) {
-                            KhaltiWebView(
-                                config = config,
-                                onReturnPageLoaded = {
-                                    if (!verificationTriggerByReturnUrl) {
-                                        viewModel.verifyPaymentStatus(khalti)
-                                        verificationTriggerByReturnUrl = true
-                                    }
-                                },
-                                onPageLoaded = {
-                                    viewModel.toggleLoading(false)
-                                },
-                                androidWebView = androidWebView,
-                                returnUrl = state.returnUrl,
-                            )
-                        }
-                    }
-                    if (state.isLoading) {
-                        LinearProgressIndicator(
-                            Modifier
-                                .height(6.dp)
-                                .width(200.dp)
-                                .align(Alignment.Center),
-                            color = Color.Gray
-                        )
-                    }
+                    KhaltiWebView(
+                        config = config,
+                        onReturnPageLoaded = {
+                            if (!verificationTriggerByReturnUrl) {
+                                viewModel.verifyPaymentStatus(khalti)
+                                verificationTriggerByReturnUrl = true
+                            }
+                        },
+                        onPageLoaded = {
+                            viewModel.toggleLoading(false)
+                        },
+                        androidWebView = androidWebView,
+                        returnUrl = getUrlData(khalti.config.paymentUrl, "return_url"),
+                        mode = getUrlData(khalti.config.paymentUrl, "mode")
+                    )
                 }
+            }
 
-            } else {
-                KhaltiError(errorType = ErrorType.network) {
-                    viewModel.toggleNetwork(NetworkUtil.isNetworkAvailable(activity))
-                }
+
+        } else {
+            KhaltiError(errorType = ErrorType.network) {
+                viewModel.toggleNetwork(NetworkUtil.isNetworkAvailable(activity))
             }
         }
     }
@@ -191,4 +166,9 @@ fun onBack() {
         ),
         khalti,
     )
+}
+
+fun getUrlData(fullUrl: String, key: String): String {
+    return fullUrl.toUri()
+        .getQueryParameter(key) ?: ""
 }
