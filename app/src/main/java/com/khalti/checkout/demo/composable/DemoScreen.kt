@@ -51,8 +51,9 @@ fun DemoScreen() {
         LocalContext.current,
         KhaltiPayConfig(
             publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "L3A7eG4mEZLvRL8oeGwNfL",
-            environment = Environment.TEST
+            pidx = "W3tuz58jksvQFxAz55rtuh",
+            environment = Environment.TEST,
+            paymentUrl = "https://test-pay.khalti.com/wallet/?pidx=W3tuz58jksvQFxAz55rtuh&return_url=https%3A%2F%2Fdocs.khalti.com%2Fkhalti-epayment&mode=wallet"
         ),
         onPaymentResult = { paymentResult, khalti ->
             Log.i("Demo | onPaymentResult", paymentResult.toString())
@@ -82,6 +83,10 @@ fun DemoScreen() {
     }
     val pidx = remember {
         mutableStateOf(khalti.config.pidx)
+    }
+
+    val paymentUrl = remember {
+        mutableStateOf(khalti.config.paymentUrl)
     }
     val environments = enumValues<Environment>()
     val selectedEnvironment = remember {
@@ -124,7 +129,20 @@ fun DemoScreen() {
                     onValueChange = {
                         pidx.value = it
                     },
+
                     label = { Text(text = "PIDX") },
+                )
+
+                Spacer(Modifier.height(20.dp))
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    value = paymentUrl.value,
+                    onValueChange = {
+                        paymentUrl.value = it
+                    },
+                    label = { Text(text = "Payment Url") },
                 )
                 Spacer(Modifier.height(20.dp))
                 Column(
