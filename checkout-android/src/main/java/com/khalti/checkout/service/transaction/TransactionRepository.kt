@@ -13,7 +13,4 @@ class TransactionRepository {
         TransactionService()
     }
 
-    suspend fun fetchDetail(pidx: String): Result<PaymentDetailModel, KFailure> {
-        return transactionService.fetchDetail(pidx)
-    }
 }
