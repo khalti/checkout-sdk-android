@@ -6,16 +6,10 @@ package com.khalti.checkout.payment
 
 import androidx.lifecycle.ViewModel
 import com.khalti.checkout.Khalti
-import com.khalti.checkout.service.transaction.TransactionRepository
 import com.khalti.checkout.service.verification.VerificationRepository
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 data class KhaltiPaymentState(
     val isLoading: Boolean = true,
