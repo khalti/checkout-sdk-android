@@ -29,7 +29,6 @@ data class KhaltiPaymentState(
 class KhaltiPaymentViewModel : ViewModel() {
     private val _state = MutableStateFlow((KhaltiPaymentState()))
     private val verificationRepo = VerificationRepository()
-    private val transactionRepo = TransactionRepository()
     val state: StateFlow<KhaltiPaymentState> = _state
 
     fun verifyPaymentStatus(khalti: Khalti) {
@@ -39,32 +38,6 @@ class KhaltiPaymentViewModel : ViewModel() {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun fetchDetail(khalti: Khalti) {
-        GlobalScope.launch {
-            val result = transactionRepo.fetchDetail(khalti.config.pidx)
-            result.match(
-                ok = {
-                    val returnUrl = it.returnUrl
-                    if (returnUrl != null) {
-                        _state.update { state ->
-                            state.copy(returnUrl = returnUrl, error = "", loadWebView = true)
-                        }
-                    }
-                },
-                err = { failure ->
-                    _state.update {
-                        it.copy(
-                            error = failure.failureMap?.get("detail")
-                                ?: "There was an error setting up your payment. Please try again later.",
-                            loadWebView = false,
-                            isLoading = false
-                        )
-                    }
-                },
-            )
-        }
-    }
 
     fun toggleNetwork(hasNetwork: Boolean) {
         _state.update { it.copy(hasNetwork = hasNetwork) }
