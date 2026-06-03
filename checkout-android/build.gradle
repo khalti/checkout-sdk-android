@@ -1,7 +1,10 @@
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
+    id 'com.vanniktech.maven.publish'
 }
 
 android {
@@ -89,3 +92,18 @@ ext {
 }
 
 apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
+
+mavenPublishing {
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL, true)
+    
+    def isLocal = gradle.startParameter.taskNames.any { it.contains("Local") }
+    def hasKeyId = project.hasProperty("signingInMemoryKeyId") && !project.property("signingInMemoryKeyId").isEmpty()
+
+    if (!isLocal) {
+        // If we are publishing to Maven Central, we MUST sign.
+        // If this fails with "no configured signatory", it means your private key is missing or invalid.
+        signAllPublications()
+    }
+
+    configure(new AndroidSingleVariantLibrary("release", true, true))
+}
