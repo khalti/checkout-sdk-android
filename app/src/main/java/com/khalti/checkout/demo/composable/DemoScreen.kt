@@ -3,7 +3,13 @@
 package com.khalti.checkout.demo.composable
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,11 +53,19 @@ fun DemoScreen() {
         SnackbarHostState()
     }
 
+    val khaltiLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            println("Result = $result")
+
+//            onKhaltiResult(pidx = pendingPidx, result = result)
+        }
+
+
     val khalti = Khalti.init(
         LocalContext.current,
         KhaltiPayConfig(
             publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "W3tuz58jksvQFxAz55rtuh",
+            pidx = "fpjGiVqi5iAAq2MRRwY4kK",
             environment = Environment.TEST,
             paymentUrl = "https://test-pay.khalti.com/wallet/?pidx=W3tuz58jksvQFxAz55rtuh&return_url=https%3A%2F%2Fdocs.khalti.com%2Fkhalti-epayment&mode=wallet"
         ),
@@ -187,6 +201,8 @@ fun DemoScreen() {
                             }
 
                             khalti.open()
+
+
                         }
                     ) {
                         Text("Pay Rs. 22")
@@ -200,4 +216,5 @@ fun DemoScreen() {
             }
         },
     )
+
 }

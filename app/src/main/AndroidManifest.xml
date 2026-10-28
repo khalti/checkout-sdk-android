@@ -27,6 +27,12 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
     </application>
+
+    <queries>
+        <package android:name="com.khalti" />
+        <package android:name="com.khalti.AS.red" />
+    </queries>
 
 </manifest>

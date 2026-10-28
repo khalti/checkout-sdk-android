@@ -6,6 +6,11 @@ package com.khalti.checkout
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import com.khalti.checkout.service.verification.VerificationRepository
 import com.khalti.checkout.data.KhaltiPayConfig
 import com.khalti.checkout.callbacks.OnMessage
@@ -44,25 +49,6 @@ class Khalti private constructor(
             Store.instance().put("khalti", khalti)
             return khalti
         }
-
-        fun init(
-            context: Context,
-            config: KhaltiPayConfig,
-            onPaymentResult: OnPaymentResult,
-            onMessage: OnMessage,
-        ): Khalti {
-            val khalti = Khalti(
-                context,
-                config,
-                onPaymentResult,
-                onMessage,
-                null,
-            )
-
-            Store.instance().put("khalti", khalti)
-
-            return khalti
-        }
     }
 
     fun open() {
@@ -73,14 +59,33 @@ class Khalti private constructor(
         store.put("merchant_package_name", packageName)
         store.put("merchant_package_version", packageInfo?.versionName ?: "")
 
-        val intent = Intent(context, PaymentActivity::class.java)
-        context.startActivity(intent)
+        if (isPackageInstalled(KHALTI_APP_PACKAGE)) {
+            context.startActivity(Intent(context, CheckoutActivity::class.java))
+        } else {
+            context.startActivity(Intent(context, PaymentActivity::class.java))
+
+        }
+
     }
 
-    fun verify() {
-        val verificationRepo = VerificationRepository()
-        verificationRepo.verify(config.pidx, this)
+
+    private val packageManager = context.applicationContext.packageManager
+    fun isPackageInstalled(pkg: String): Boolean = try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(
+                pkg,
+                PackageManager.PackageInfoFlags.of(0L)
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.getPackageInfo(pkg, 0)
+        }
+        true
+    } catch (_: PackageManager.NameNotFoundException) {
+        false
     }
+
+
 
     fun close() {
         Signal.instance().dispatch(SignalKey.ClosePayment, "Close")
