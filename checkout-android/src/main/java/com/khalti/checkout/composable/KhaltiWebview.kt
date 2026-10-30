@@ -16,6 +16,7 @@ import com.khalti.checkout.resource.Strings
 import com.khalti.checkout.resource.Url
 import com.khalti.checkout.view.EPaymentWebClient
 import androidx.core.net.toUri
+import com.khalti.checkout.khalti
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -36,8 +37,10 @@ fun KhaltiWebView(
                 Url.BASE_PAYMENT_URL_STAGING
             }
 
+            val pidx = khalti?.config?.paymentUrl?.toUri()?.getQueryParameter("pidx")
+
             val paymentUri =
-                baseUrl.value.toUri().buildUpon().appendQueryParameter("pidx", config.pidx)
+                baseUrl.value.toUri().buildUpon().appendQueryParameter("pidx", pidx)
                     .appendQueryParameter("mode", mode)
 
             androidWebView.webViewClient =
