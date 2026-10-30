@@ -3,11 +3,8 @@
 package com.khalti.checkout.demo.composable
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
-import androidx.activity.ComponentActivity
+import android.widget.ListView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -19,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -28,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,6 +40,7 @@ import com.khalti.android.demo.R
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.data.Environment
 import com.khalti.checkout.data.KhaltiPayConfig
+import com.khalti.checkout.data.PaymentResult
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -53,28 +53,23 @@ fun DemoScreen() {
         SnackbarHostState()
     }
 
-    val khaltiLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            println("Result = $result")
-
-//            onKhaltiResult(pidx = pendingPidx, result = result)
-        }
+    val paymentResults = remember {
+        mutableStateListOf<PaymentResult>()
+    }
 
 
     val khalti = Khalti.init(
         LocalContext.current,
         KhaltiPayConfig(
-            publicKey = "live_public_key_979320ffda734d8e9f7758ac39ec775f",
-            pidx = "fpjGiVqi5iAAq2MRRwY4kK",
+            publicKey = "4aa1b684f4de4860968552558fc8487d",
             environment = Environment.TEST,
-            paymentUrl = "https://test-pay.khalti.com/wallet/?pidx=W3tuz58jksvQFxAz55rtuh&return_url=https%3A%2F%2Fdocs.khalti.com%2Fkhalti-epayment&mode=wallet"
+            paymentUrl = "https://test-pay.khalti.com/?pidx=e3djGuB2n6CyU78CooBu5d"
         ),
         onPaymentResult = { paymentResult, khalti ->
             Log.i("Demo | onPaymentResult", paymentResult.toString())
+            paymentResults.add(paymentResult)
             khalti.close()
-            scope.launch {
-                snackBarHostState.showSnackbar("Payment successful for pidx: ${khalti.config.pidx}")
-            }
+
         },
         onMessage = { payload, khalti ->
             Log.i(
@@ -95,13 +90,11 @@ fun DemoScreen() {
     val publicKey = remember {
         mutableStateOf(khalti.config.publicKey)
     }
-    val pidx = remember {
-        mutableStateOf(khalti.config.pidx)
-    }
 
     val paymentUrl = remember {
         mutableStateOf(khalti.config.paymentUrl)
     }
+
     val environments = enumValues<Environment>()
     val selectedEnvironment = remember {
         mutableStateOf(khalti.config.environment)
@@ -133,18 +126,6 @@ fun DemoScreen() {
                         publicKey.value = it
                     },
                     label = { Text(text = "Public Key") },
-                )
-                Spacer(Modifier.height(20.dp))
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    value = pidx.value,
-                    onValueChange = {
-                        pidx.value = it
-                    },
-
-                    label = { Text(text = "PIDX") },
                 )
 
                 Spacer(Modifier.height(20.dp))
@@ -190,12 +171,12 @@ fun DemoScreen() {
                     OutlinedButton(
                         {
                             if (publicKey.value != khalti.config.publicKey
-                                || pidx.value != khalti.config.pidx
                                 || selectedEnvironment.value != khalti.config.environment
+                                || paymentUrl.value != khalti.config.paymentUrl
                             ) {
                                 khalti.config = khalti.config.copy(
                                     publicKey = publicKey.value,
-                                    pidx = pidx.value,
+                                    paymentUrl = paymentUrl.value,
                                     environment = selectedEnvironment.value,
                                 )
                             }
@@ -213,6 +194,37 @@ fun DemoScreen() {
                     text = "This is a demo application developed by some merchant.",
                     style = MaterialTheme.typography.bodySmall
                 )
+
+                if (paymentResults.isNotEmpty()) {
+                    Spacer(Modifier.height(30.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(
+                            text = "Payment Results",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        paymentResults.forEachIndexed { index, result ->
+                            Text(
+                                text = buildString {
+                                    append("status: ${result.status}\n")
+                                    result.payload?.let { append(it.toString()) }
+                                    result.message?.let { append("message: $it\n") }
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                            if (index < paymentResults.lastIndex) {
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
             }
         },
     )
