@@ -7,16 +7,15 @@ package com.khalti.checkout
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import com.khalti.checkout.service.verification.VerificationRepository
-import com.khalti.checkout.data.KhaltiPayConfig
+import androidx.core.net.toUri
+import com.khalti.checkout.cache.Store
 import com.khalti.checkout.callbacks.OnMessage
 import com.khalti.checkout.callbacks.OnPaymentResult
 import com.khalti.checkout.callbacks.OnReturn
-import com.khalti.checkout.cache.Store
+import com.khalti.checkout.data.KhaltiPayConfig
+import com.khalti.checkout.resource.OnMessageEvent
+import com.khalti.checkout.resource.OnMessagePayload
 import com.khalti.checkout.signal.Signal
 import com.khalti.checkout.signal.SignalKey
 import com.khalti.checkout.utils.PackageUtil
@@ -59,6 +58,10 @@ class Khalti private constructor(
         store.put("merchant_package_name", packageName)
         store.put("merchant_package_version", packageInfo?.versionName ?: "")
 
+        val pidx = khalti?.config?.paymentUrl?.toUri()?.getQueryParameter("pidx")
+
+        if (pidx.isNullOrEmpty()) onBack()
+
         if (isPackageInstalled(KHALTI_APP_PACKAGE)) {
             context.startActivity(Intent(context, CheckoutActivity::class.java))
         } else {
@@ -86,8 +89,20 @@ class Khalti private constructor(
     }
 
 
-
     fun close() {
         Signal.instance().dispatch(SignalKey.ClosePayment, "Close")
+    }
+
+
+    fun onBack() {
+        val khalti = Store.instance().get<Khalti>("khalti")
+        khalti?.onMessage?.invoke(
+            OnMessagePayload(
+                OnMessageEvent.KPGDisposed,
+                "Pidx not matched",
+                needsPaymentConfirmation = true
+            ),
+            khalti,
+        )
     }
 }
