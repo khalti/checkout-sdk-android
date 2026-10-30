@@ -4,6 +4,7 @@
 
 package com.khalti.checkout.payment
 
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.khalti.checkout.Khalti
 import com.khalti.checkout.service.verification.VerificationRepository
@@ -27,7 +28,11 @@ class KhaltiPaymentViewModel : ViewModel() {
 
     fun verifyPaymentStatus(khalti: Khalti) {
         toggleProgressDialog()
-        verificationRepo.verify(khalti.config.pidx, khalti) {
+
+        val pidx =
+            com.khalti.checkout.khalti?.config?.paymentUrl?.toUri()?.getQueryParameter("pidx") ?: ""
+
+        verificationRepo.verify(pidx, khalti) {
             toggleProgressDialog(false)
         }
     }
