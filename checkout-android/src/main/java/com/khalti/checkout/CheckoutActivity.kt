@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toUri
 import com.khalti.checkout.cache.Store
 import com.khalti.checkout.payment.KhaltiPaymentViewModel
 import com.khalti.checkout.resource.OnMessageEvent
@@ -52,7 +53,7 @@ class CheckoutActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val pidx = khalti?.config?.pidx
+        val pidx = khalti?.config?.paymentUrl?.toUri()?.getQueryParameter("pidx")
         payWithKhalti(pidx, this)
     }
 
@@ -79,7 +80,8 @@ class CheckoutActivity : ComponentActivity() {
         val khaltiResult = parseKhaltiResult(result.data)
         when (khaltiResult.status) {
             KhaltiStatus.COMPLETED, KhaltiStatus.SETTLED -> {
-                khaltiPaymentViewModel.verifyPaymentStatus(khalti = khalti!!)
+
+                khalti?.let { khaltiPaymentViewModel.verifyPaymentStatus(khalti = it) }
                 returnToPreviousPage(RESULT_OK, khaltiResult.message)
             }
 
