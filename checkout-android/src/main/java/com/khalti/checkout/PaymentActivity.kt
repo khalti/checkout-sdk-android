@@ -5,14 +5,18 @@ package com.khalti.checkout
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup.LayoutParams
 import android.webkit.WebView
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.khalti.checkout.cache.Store
 import com.khalti.checkout.payment.KhaltiPaymentPage
 import com.khalti.checkout.payment.KhaltiPaymentViewModel
 import com.khalti.checkout.payment.onBack
+import com.khalti.checkout.resource.OnMessageEvent
+import com.khalti.checkout.resource.OnMessagePayload
 import com.khalti.checkout.signal.Connection
 import com.khalti.checkout.signal.Signal
 import com.khalti.checkout.signal.SignalKey
@@ -22,8 +26,15 @@ internal class PaymentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val webView = buildWebView()
+        if (webView == null) {
+            notifyWebViewUnavailable()
+            finish()
+            return
+        }
+
         setContent {
-            KhaltiPaymentPage(this, KhaltiPaymentViewModel(), buildWebView())
+            KhaltiPaymentPage(this, KhaltiPaymentViewModel(), webView)
         }
         registerSignal()
         setupBackPressListener()
