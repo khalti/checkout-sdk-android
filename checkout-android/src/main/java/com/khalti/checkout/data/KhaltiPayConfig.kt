@@ -10,7 +10,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class KhaltiPayConfig(
     val publicKey: String,
-    val pidx: String,
     val openInKhalti: Boolean = true,
     val environment: Environment = Environment.PROD,
     val paymentUrl: String,
