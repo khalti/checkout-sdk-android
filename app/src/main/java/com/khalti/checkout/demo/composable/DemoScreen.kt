@@ -67,6 +67,7 @@ fun DemoScreen() {
         ),
         onPaymentResult = { paymentResult, khalti ->
             Log.i("Demo | onPaymentResult", paymentResult.toString())
+            paymentResults.clear()
             paymentResults.add(paymentResult)
             khalti.close()
 
@@ -164,10 +165,6 @@ fun DemoScreen() {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(text = "Rs. 22", style = MaterialTheme.typography.titleLarge)
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = "1 day fee", style = MaterialTheme.typography.bodySmall)
-                    Spacer(Modifier.height(8.dp))
                     OutlinedButton(
                         {
                             if (publicKey.value != khalti.config.publicKey
@@ -186,7 +183,7 @@ fun DemoScreen() {
 
                         }
                     ) {
-                        Text("Pay Rs. 22")
+                        Text("Pay")
                     }
                 }
                 Spacer(Modifier.height(30.dp))

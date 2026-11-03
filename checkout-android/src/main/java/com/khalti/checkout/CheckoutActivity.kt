@@ -17,7 +17,7 @@ import com.khalti.checkout.resource.OnMessagePayload
 
 // Package (applicationId) of the installed Khalti app to launch for payment.
 // Production: "com.khalti"  |  Develop/test build: "com.khalti.AS.red"
-const val KHALTI_APP_PACKAGE = "com.khalti.AS.red"
+const val KHALTI_APP_PACKAGE = "com.khalti"
 
 // The launched Activity's class name does NOT change with an applicationIdSuffix.
 const val KHALTI_APP_ACTIVITY = "com.khalti.MainActivity"

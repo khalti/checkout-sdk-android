@@ -27,11 +27,6 @@ internal class PaymentActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val webView = buildWebView()
-        if (webView == null) {
-            notifyWebViewUnavailable()
-            finish()
-            return
-        }
 
         setContent {
             KhaltiPaymentPage(this, KhaltiPaymentViewModel(), webView)

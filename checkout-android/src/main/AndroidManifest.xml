@@ -2,17 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
         <activity android:name=".PaymentActivity" />
-        <activity android:name=".CheckoutActivity"/>
+        <activity android:name=".CheckoutActivity" />
 
     </application>
 
     <queries>
         <package android:name="com.khalti" />
-        <package android:name="com.khalti.AS.red" />
     </queries>
 
 </manifest>
